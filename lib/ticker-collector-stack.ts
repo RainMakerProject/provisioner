@@ -22,7 +22,17 @@ export class TickerCollectorStack extends cdk.Stack {
       new iam.Policy(this, "TaskRolePolicy", {
         statements: [
           new iam.PolicyStatement({
-            actions: ["sqs:SendMessage"],
+            actions: [
+              "dynamodb:DescribeTable",
+              "dynamodb:Scan",
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:Query",
+              "dynamodb:BatchGetItem",
+              "dynamodb:BatchWriteItem",
+              "dynamodb:ConditionCheckItem",
+            ],
             effect: iam.Effect.ALLOW,
             resources: ["*"],
           }),
