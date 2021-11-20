@@ -12,6 +12,7 @@ export class CommonStack extends cdk.Stack {
     this.vpc = new ec2.Vpc(this, "Vpc", {});
     this.ecsCluster = new ecs.Cluster(this, "Cluster", {
       vpc: this.vpc,
+      containerInsights: true,
     });
   }
 }
