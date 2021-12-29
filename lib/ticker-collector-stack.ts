@@ -13,10 +13,28 @@ export class TickerCollectorStack extends cdk.Stack {
 
     const repository = new ecr.Repository(this, "Repository", {});
 
+    const taskExecutionRole = new iam.Role(this, "TaskExecutionRole", {
+      assumedBy: new iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy")],
+    });
+
     const taskDefinition = new ecs.FargateTaskDefinition(this, "TaskDefinition", {
       cpu: 256,
       memoryLimitMiB: 512,
+      executionRole: taskExecutionRole,
     });
+
+    taskExecutionRole.attachInlinePolicy(
+      new iam.Policy(this, "TaskExecutionRolePolicy", {
+        statements: [
+          new iam.PolicyStatement({
+            actions: ["s3:GetObject", "s3:GetBucketLocation"],
+            effect: iam.Effect.ALLOW,
+            resources: ["*"],
+          }),
+        ],
+      })
+    );
 
     taskDefinition.taskRole.attachInlinePolicy(
       new iam.Policy(this, "TaskRolePolicy", {
